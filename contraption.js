@@ -1,7 +1,7 @@
 // Original code by @meiamsome
 
 class Contraption {
-  async load(points, length = points[0].length) {
+  load(points, length = points[0].length) {
     this.length = length;
     const multiplier = length / points[0].length;
     const x = Array.from(this, (_, i) =>
@@ -29,7 +29,7 @@ class Contraption {
       return { fftReal, fftImag };
     });
 
-    const data = [await fftReal.data(), await fftImag.data()];
+    const data = [fftReal.dataSync(), fftImag.dataSync()];
     fftReal.dispose();
     fftImag.dispose();
     this._circles = [];
@@ -87,7 +87,7 @@ class ContraptionSet {
     this.length = 1;
   }
 
-  async load(drawing, maxSegments = null) {
+  load(drawing, maxSegments = null) {
     this.length = 1;
     for (const segment of drawing) {
       const start = new p5.Vector(segment[0][0], segment[1][0]);
@@ -105,8 +105,8 @@ class ContraptionSet {
     if (maxSegments && this.length * drawing.length > maxSegments) {
       throw new Error(`Too many segments: ${this.length * drawing.length} > ${maxSegments}`);
     }
-    this._contraptions = await Promise.all(
-      drawing.map(drawing_part => new Contraption().load(drawing_part, this.length))
+    this._contraptions = drawing.map(drawing_part =>
+      new Contraption().load(drawing_part, this.length)
     );
     this.segments = this._contraptions.reduce((acc, contraption) => acc + contraption.length, 0);
     return this;

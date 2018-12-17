@@ -18,15 +18,15 @@ function lcm(a, b) {
   return a * (b / gcd(a, b));
 }
 
-async function setup() {
+function setup() {
   let canvas = createCanvas(800, 800);
-  contraptionSet = await new ContraptionSet().load(drawing, maxSegments);
+  contraptionSet = new ContraptionSet().load(drawing, maxSegments);
 }
 
 let drawingLines = [];
 let drawingInterval = null;
 
-async function draw() {
+function draw() {
   frameRate(5);
   background(220);
   translate(width / 2, height / 2);
