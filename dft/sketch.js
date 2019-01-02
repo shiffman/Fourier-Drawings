@@ -19,8 +19,6 @@ function setup() {
     y[i] = i * 10;
   }
   console.log(y);
-
-  slider = createSlider(1, 10, 5);
   fourier = fourierT(y);
   console.log(fourier);
 }
