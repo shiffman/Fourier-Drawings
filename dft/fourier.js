@@ -1,4 +1,4 @@
-// From: https://gist.github.com/anonymous/129d477ddb1c8025c9ac
+// From: https://gist.github.com/kazad/8bb682da198db597558c
 
 function fourierT(data) {
   var N = data.length;
