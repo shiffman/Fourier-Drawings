@@ -4,12 +4,11 @@ class Contraption {
   constructor() {
     this.time = 0;
     this.time_interval = 1;
-    this.length = 150;
+    this.length = 300;
   }
 
   load(points) {
     const multiplier = this.length / points.length;
-
     const x = Array.from(this, (_, i) => {
       const j = Math.floor(i / multiplier);
       const k = Math.ceil(i / multiplier) % points.length;
