@@ -1,26 +1,24 @@
 // let drawing = [{ x: -200, y: -200 }, { x: 0, y: -100 }, { x: 0, y: 100 }, { x: 200, y: 200 }];
 
-// Fourier Series
-// Daniel Shiffman
-// https://thecodingtrain.com/CodingChallenges/125-fourier-series.html
-// https://youtu.be/Mm2eYfj0SgA
-// https://editor.p5js.org/codingtrain/sketches/SJ02W1OgV
-
 let time = 0;
 let wave = [];
 
+let x = [];
 let y = [];
-let fourier;
+let fourierX;
+let fourierY;
 
 function setup() {
   createCanvas(600, 400);
 
-  for (let i = 0; i < 10; i++) {
-    y[i] = i * 10;
+  for (let i = 0; i < 500; i++) {
+    y[i] = 250 * noise(i / 50) - 125;
   }
-  console.log(y);
-  fourier = fourierT(y);
-  console.log(fourier);
+  for (let i = 0; i < 500; i++) {
+    x[i] = 250 * noise((i + 500) / 50) - 125;
+  }
+  fourierX = fourierT(x);
+  fourierY = fourierT(y);
 }
 
 function draw() {
@@ -30,12 +28,12 @@ function draw() {
   let x = 0;
   let y = 0;
 
-  for (let i = 0; i < fourier.length; i++) {
+  for (let i = 0; i < fourierY.length; i++) {
     let prevx = x;
     let prevy = y;
 
-    let radius = fourier[i].amp;
-    let angle = fourier[i].phase + time * (fourier[i].freq + 1);
+    let radius = fourierY[i].amp;
+    let angle = fourierY[i].phase + time * fourierY[i].freq + HALF_PI;
     x += radius * cos(angle);
     y += radius * sin(angle);
 
@@ -43,7 +41,6 @@ function draw() {
     noFill();
     ellipse(prevx, prevy, radius * 2);
 
-    //fill(255);
     stroke(255);
     line(prevx, prevy, x, y);
     //ellipse(x, y, 8);
@@ -59,7 +56,7 @@ function draw() {
   }
   endShape();
 
-  time += 0.02;
+  time += TWO_PI / fourierY.length;
 
   if (wave.length > 250) {
     wave.pop();
