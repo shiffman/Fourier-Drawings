@@ -1,7 +1,7 @@
-// let drawing = [{ x: -200, y: -200 }, { x: 0, y: -100 }, { x: 0, y: 100 }, { x: 200, y: 200 }];
+let drawing = []; // = [{ x: -50, y: -50 }, { x: 0, y: -25 }, { x: 0, y: 25 }, { x: 50, y: 50 }];
 
 let time = 0;
-let wave = [];
+let path = [];
 
 let x = [];
 let y = [];
@@ -9,31 +9,35 @@ let fourierX;
 let fourierY;
 
 function setup() {
-  createCanvas(600, 400);
+  createCanvas(400, 400);
 
-  for (let i = 0; i < 500; i++) {
-    y[i] = 250 * noise(i / 50) - 125;
+  for (let a = 0; a < TWO_PI * 2; a += 0.05) {
+    let x = map(a, 0, TWO_PI * 2, -100, 100);
+    let r = 150;
+    drawing.push(createVector(x, r * noise(a) - r / 2));
   }
-  for (let i = 0; i < 500; i++) {
-    x[i] = 250 * noise((i + 500) / 50) - 125;
+
+  for (let i = 0; i < drawing.length; i++) {
+    x[i] = drawing[i].x;
+  }
+  for (let i = 0; i < drawing.length; i++) {
+    y[i] = drawing[i].y;
   }
   fourierX = fourierT(x);
   fourierY = fourierT(y);
+  fourierX.sort((a, b) => b.amp - a.amp);
+  fourierY.sort((a, b) => b.amp - a.amp);
 }
 
-function draw() {
-  background(0);
-  translate(150, 200);
+function drawFourier(cx, cy, rotation, fourier) {
+  let x = cx;
+  let y = cy;
 
-  let x = 0;
-  let y = 0;
-
-  for (let i = 0; i < fourierY.length; i++) {
+  for (let i = 0; i < fourier.length; i++) {
     let prevx = x;
     let prevy = y;
-
-    let radius = fourierY[i].amp;
-    let angle = fourierY[i].phase + time * fourierY[i].freq + HALF_PI;
+    let radius = fourier[i].amp;
+    let angle = fourier[i].phase + time * fourier[i].freq + rotation;
     x += radius * cos(angle);
     y += radius * sin(angle);
 
@@ -45,20 +49,29 @@ function draw() {
     line(prevx, prevy, x, y);
     //ellipse(x, y, 8);
   }
-  wave.unshift(y);
+  return createVector(x, y);
+}
 
-  translate(200, 0);
-  line(x - 200, y, 0, wave[0]);
+function draw() {
+  background(0);
+  let vx = drawFourier(200, 50, 0, fourierX);
+  let vy = drawFourier(50, 200, HALF_PI, fourierY);
+  path.push(createVector(vx.x, vy.y));
+  stroke(255, 50);
+  ellipse(x, y, 16, 16);
+  line(vx.x, vx.y, vx.x, vy.y);
+  line(vy.x, vy.y, vx.x, vy.y);
+
+  stroke(255);
   beginShape();
   noFill();
-  for (let i = 0; i < wave.length; i++) {
-    vertex(i, wave[i]);
+  for (let v of path) {
+    vertex(v.x, v.y);
   }
   endShape();
-
   time += TWO_PI / fourierY.length;
-
-  if (wave.length > 250) {
-    wave.pop();
+  if (time > TWO_PI) {
+    time = 0;
+    path = [];
   }
 }
